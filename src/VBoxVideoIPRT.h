@@ -137,7 +137,7 @@ RT_C_DECLS_END
 #define unlikely _X_UNLIKELY
 
 /**
- * A point in a two dimentional coordinate system.
+ * A point in a two dimensional coordinate system.
  */
 typedef struct RTPOINT
 {

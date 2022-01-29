@@ -154,7 +154,7 @@ typedef struct VBOXRec
     unsigned long cbView;
     /** Whether the pre-X-server mode was a VBE mode */
     Bool fSavedVBEMode;
-    /** Paramters of the saved pre-X-server VBE mode, invalid if there is none
+    /** Parameters of the saved pre-X-server VBE mode, invalid if there is none
      */
     uint16_t cSavedWidth, cSavedHeight, cSavedPitch, cSavedBPP, fSavedFlags;
     CloseScreenProcPtr CloseScreen;
