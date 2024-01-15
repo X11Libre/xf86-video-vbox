@@ -55,6 +55,10 @@
 
 #include <VBoxVideoVBE.h>
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "xf86.h"
 #include "xf86str.h"
 #include "xf86Cursor.h"

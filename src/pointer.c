@@ -25,6 +25,10 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #ifndef PCIACCESS
 # include "xf86Pci.h"
 # include <Pci.h>
