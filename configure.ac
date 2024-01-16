@@ -39,6 +39,12 @@ m4_ifndef([XORG_MACROS_VERSION],
 XORG_MACROS_VERSION(1.8)
 XORG_DEFAULT_OPTIONS
 
+# Disable some of the warnings xorg-macros.m4 sets by default that cause
+# too much noise here
+XORG_TESTSET_CFLAG([BASE_CFLAGS], [-Wno-declaration-after-statement])
+XORG_TESTSET_CFLAG([BASE_CFLAGS], [-Wno-unused-but-set-variable])
+XORG_TESTSET_CFLAG([BASE_CFLAGS], [-Wno-unused-value])
+
 # Initialize libtool
 LT_INIT([disable-static])
 
