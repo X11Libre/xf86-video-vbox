@@ -41,7 +41,6 @@ vboxvideo_drv_ladir = @moduledir@/drivers
 vboxvideo_drv_la_SOURCES = \
          edid.c \
          getmode.c \
-         helpers.c \
          HGSMIBase.c \
          HGSMIBase.h \
          HGSMIBuffers.c \
