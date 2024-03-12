@@ -1,6 +1,6 @@
 /* $Id: VBoxVideoIPRT.h 118373 2017-10-13 17:01:46Z michael $ */
 /*
- * Copyright (C) 2017, 2024 Oracle and/or its affiliates.
+ * Copyright (C) 2017, 2024, Oracle and/or its affiliates.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -30,11 +30,15 @@
 # include "VBoxVideoErr.h"
 
 #ifndef __cplusplus
+#if __STDC_VERSION__ >= 199901L
+#include <stdbool.h>
+#else
 typedef enum
 {
     false = 0,
     true
 } bool;
+#endif
 # define RT_C_DECLS_BEGIN
 # define RT_C_DECLS_END
 #else
