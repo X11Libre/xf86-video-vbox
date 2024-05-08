@@ -105,7 +105,7 @@ static void vboxFillDisplayMode(ScrnInfoPtr pScrn, DisplayModePtr m,
  */
 static DisplayModePtr vboxAddEmptyScreenMode(ScrnInfoPtr pScrn)
 {
-    DisplayModePtr pMode = xnfcalloc(sizeof(DisplayModeRec), 1);
+    DisplayModePtr pMode = XNFcallocarray(sizeof(DisplayModeRec), 1);
 
     TRACE_ENTRY();
     if (!pScrn->modes)

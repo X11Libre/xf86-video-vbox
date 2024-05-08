@@ -122,7 +122,7 @@ static inline void VBOXSetRec(ScrnInfoPtr pScrn)
 {
     if (!pScrn->driverPrivate)
     {
-        VBOXPtr pVBox = (VBOXPtr)xnfcalloc(sizeof(VBOXRec), 1);
+        VBOXPtr pVBox = (VBOXPtr)XNFcallocarray(sizeof(VBOXRec), 1);
         pScrn->driverPrivate = pVBox;
 #if defined(VBOXVIDEO_13) && defined(RT_OS_LINUX)
         pVBox->fdACPIDevices = -1;
@@ -504,7 +504,7 @@ static DisplayModePtr vbox_output_add_mode(VBOXPtr pVBox, DisplayModePtr *pModes
                                            Bool isPreferred, Bool isUserDef)
 {
     TRACE_LOG("pszName=%s, x=%d, y=%d\n", pszName ? pszName : "(null)", x, y);
-    DisplayModePtr pMode = xnfcalloc(1, sizeof(DisplayModeRec));
+    DisplayModePtr pMode = XNFcallocarray(1, sizeof(DisplayModeRec));
     int cRefresh = 60;
 
     pMode->status        = MODE_OK;
@@ -908,7 +908,7 @@ VBOXPreInit(ScrnInfoPtr pScrn, int flags)
     pVBox->fAnyX = VBoxVideoAnyWidthAllowed();
 
     /* Set up clock information that will support all modes we need. */
-    pScrn->clockRanges = xnfcalloc(sizeof(ClockRange), 1);
+    pScrn->clockRanges = XNFcallocarray(sizeof(ClockRange), 1);
     pScrn->clockRanges->minClock = 1000;
     pScrn->clockRanges->maxClock = 1000000000;
     pScrn->clockRanges->clockIndex = -1;
@@ -1156,8 +1156,8 @@ static Bool VBOXScreenInit(ScreenPtr pScreen, int argc, char **argv)
     }
     vbvxSetUpHGSMIHeapInGuest(pVBox, pScrn->videoRam * 1024);
     pVBox->cScreens = VBoxHGSMIGetMonitorCount(&pVBox->guestCtx);
-    pVBox->pScreens = xnfcalloc(pVBox->cScreens, sizeof(*pVBox->pScreens));
-    pVBox->paVBVAModeHints = xnfcalloc(pVBox->cScreens, sizeof(*pVBox->paVBVAModeHints));
+    pVBox->pScreens = XNFcallocarray(pVBox->cScreens, sizeof(*pVBox->pScreens));
+    pVBox->paVBVAModeHints = XNFcallocarray(pVBox->cScreens, sizeof(*pVBox->paVBVAModeHints));
     xf86DrvMsg(pScrn->scrnIndex, X_INFO, "Requested monitor count: %u\n", pVBox->cScreens);
     vboxEnableVbva(pScrn);
     /* Set up the dirty rectangle handler.  It will be added into a function
