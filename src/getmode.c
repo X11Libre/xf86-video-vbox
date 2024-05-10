@@ -95,7 +95,7 @@ static void vboxFillDisplayMode(ScrnInfoPtr pScrn, DisplayModePtr m,
     m->VSyncEnd      = m->VDisplay + 4;
     m->VTotal        = m->VDisplay + 6;
     m->Clock         = m->HTotal * m->VTotal * 60 / 1000; /* kHz */
-    m->name      = xnfstrdup(pszName);
+    m->name          = XNFstrdup(pszName);
 }
 
 /**

@@ -530,7 +530,7 @@ static DisplayModePtr vbox_output_add_mode(VBOXPtr pVBox, DisplayModePtr *pModes
     if (NULL == pszName) {
         xf86SetModeDefaultName(pMode);
     } else {
-        pMode->name          = xnfstrdup(pszName);
+        pMode->name      = XNFstrdup(pszName);
     }
     *pModes = xf86ModesAdd(*pModes, pMode);
     return pMode;
