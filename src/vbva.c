@@ -32,10 +32,8 @@
 
 #include "vboxvideo.h"
 
-#ifdef XORG_7X
 # include <stdlib.h>
 # include <string.h>
-#endif
 
 /**************************************************************************
 * Main functions                                                          *

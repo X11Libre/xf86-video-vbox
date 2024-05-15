@@ -20,15 +20,14 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include <string.h>
+
 #include "vboxvideo.h"
 #include "os.h"
 #include "propertyst.h"
 #include "windowstr.h"
 #include "xf86.h"
 #include <X11/Xatom.h>
-#ifdef XORG_7X
-# include <string.h>
-#endif
 #include "VBoxVideoErr.h"
 
 VBOXPtr vbvxGetRec(ScrnInfoPtr pScrn)
@@ -64,18 +63,13 @@ void vbvxSetIntegerPropery(ScrnInfoPtr pScrn, char *pszName, size_t cData, int32
 
     property_name = MakeAtom(pszName, strlen(pszName), TRUE);
     AssertMsg(property_name != BAD_RESOURCE, ("Failed to set atom \"%s\"\n", pszName));
-    ChangeWindowProperty(ROOT_WINDOW(pScrn), property_name, XA_INTEGER, 32, PropModeReplace, cData, paData, fSendEvent);
+    dixChangeWindowProperty(serverClient, ROOT_WINDOW(pScrn), property_name, XA_INTEGER, 32, PropModeReplace, cData, paData, fSendEvent);
 }
 
 void vbvxReprobeCursor(ScrnInfoPtr pScrn)
 {
     if (ROOT_WINDOW(pScrn) == NULL)
         return;
-#ifdef XF86_SCRN_INTERFACE
     pScrn->EnableDisableFBAccess(pScrn, FALSE);
     pScrn->EnableDisableFBAccess(pScrn, TRUE);
-#else
-    pScrn->EnableDisableFBAccess(pScrn->scrnIndex, FALSE);
-    pScrn->EnableDisableFBAccess(pScrn->scrnIndex, TRUE);
-#endif
 }

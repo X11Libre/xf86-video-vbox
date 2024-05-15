@@ -49,10 +49,6 @@
 #include "xf86.h"
 /* For video memory mapping. */
 #include "xf86_OSproc.h"
-#if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 6
-/* PCI resources. */
-# include "xf86Resources.h"
-#endif
 /* Generic server linear frame-buffer APIs. */
 #include "fb.h"
 /* Colormap and visual handling. */
@@ -74,12 +70,10 @@
 #include "property.h"
 #include <X11/Xatom.h>
 
-#ifdef XORG_7X
 # include <stdlib.h>
 # include <string.h>
 # include <fcntl.h>
 # include <unistd.h>
-#endif
 
 /* Mandatory functions */
 
@@ -112,11 +106,6 @@ static void VBOXUnmapVidMem(ScrnInfoPtr pScrn);
 static void VBOXSaveMode(ScrnInfoPtr pScrn);
 static void VBOXRestoreMode(ScrnInfoPtr pScrn);
 static void setSizesAndCursorIntegration(ScrnInfoPtr pScrn, Bool fScreenInitTime);
-
-#ifndef XF86_SCRN_INTERFACE
-# define xf86ScreenToScrn(pScreen) xf86Screens[(pScreen)->myNum]
-# define xf86ScrnToScreen(pScrn) screenInfo.screens[(pScrn)->scrnIndex]
-#endif
 
 static inline void VBOXSetRec(ScrnInfoPtr pScrn)
 {
@@ -166,9 +155,7 @@ static PciChipsets VBOXPCIchipsets[] = {
  * this DriverRec be an upper-case version of the driver name.
  */
 
-#ifdef XORG_7X
 _X_EXPORT
-#endif
 DriverRec VBOXVIDEO = {
     VBOX_VERSION,
     VBOX_DRIVER_NAME,
@@ -181,9 +168,7 @@ DriverRec VBOXVIDEO = {
     VBOXAvailableOptions,
     NULL,
     0,
-#ifdef XORG_7X
     NULL,
-#endif
 #ifdef PCIACCESS
     vbox_device_match,
     VBOXPciProbe
@@ -194,45 +179,6 @@ DriverRec VBOXVIDEO = {
 static const OptionInfoRec VBOXOptions[] = {
     { -1, NULL, OPTV_NONE, {0}, FALSE }
 };
-
-#ifndef XORG_7X
-/*
- * List of symbols from other modules that this module references.  This
- * list is used to tell the loader that it is OK for symbols here to be
- * unresolved providing that it hasn't been told that they haven't been
- * told that they are essential via a call to xf86LoaderReqSymbols() or
- * xf86LoaderReqSymLists().  The purpose is this is to avoid warnings about
- * unresolved symbols that are not required.
- */
-static const char *fbSymbols[] = {
-    "fbPictureInit",
-    "fbScreenInit",
-    NULL
-};
-
-static const char *shadowfbSymbols[] = {
-    "ShadowFBInit2",
-    NULL
-};
-
-static const char *ramdacSymbols[] = {
-    "xf86DestroyCursorInfoRec",
-    "xf86InitCursor",
-    "xf86CreateCursorInfoRec",
-    NULL
-};
-
-static const char *vgahwSymbols[] = {
-    "vgaHWFreeHWRec",
-    "vgaHWGetHWRec",
-    "vgaHWGetIOBase",
-    "vgaHWGetIndex",
-    "vgaHWRestore",
-    "vgaHWSave",
-    "vgaHWSetStdFuncs",
-    NULL
-};
-#endif /* !XORG_7X */
 
 /** Resize the virtual framebuffer. */
 static Bool adjustScreenPixmap(ScrnInfoPtr pScrn, int width, int height)
@@ -595,11 +541,7 @@ static XF86ModuleVersionInfo vboxVersionRec =
     "Oracle Corporation",
     MODINFOSTRING1,
     MODINFOSTRING2,
-#ifdef XORG_7X
     XORG_VERSION_CURRENT,
-#else
-    XF86_VERSION_CURRENT,
-#endif
     1,                          /* Module major version. Xorg-specific */
     0,                          /* Module minor version. Xorg-specific */
     1,                          /* Module patchlevel. Xorg-specific */
@@ -613,9 +555,7 @@ static XF86ModuleVersionInfo vboxVersionRec =
  * This data is accessed by the loader.  The name must be the module name
  * followed by "ModuleData".
  */
-#ifdef XORG_7X
 _X_EXPORT
-#endif
 XF86ModuleData vboxvideoModuleData = { &vboxVersionRec, vboxSetup, NULL };
 
 static pointer
@@ -631,13 +571,6 @@ vboxSetup(pointer Module, pointer Options, int *ErrorMajor, int *ErrorMinor)
         xf86AddDriver(&VBOXVIDEO, Module, HaveDriverFuncs);
 #else
         xf86AddDriver(&VBOXVIDEO, Module, 0);
-#endif
-#ifndef XORG_7X
-        LoaderRefSymLists(fbSymbols,
-                          shadowfbSymbols,
-                          ramdacSymbols,
-                          vgahwSymbols,
-                          NULL);
 #endif
         xf86Msg(X_CONFIG, "Load address of symbol \"VBOXVIDEO\" is %p\n",
                 (void *)&VBOXVIDEO);
@@ -664,34 +597,7 @@ VBOXIdentify(int flags)
     xf86PrintChipsets(VBOX_NAME, "guest driver for VirtualBox", VBOXChipsets);
 }
 
-#ifndef XF86_SCRN_INTERFACE
-# define SCRNINDEXAPI(pfn) pfn ## Index
-static Bool VBOXScreenInitIndex(int scrnIndex, ScreenPtr pScreen, int argc, char **argv)
-{
-    RT_NOREF(scrnIndex);
-    return VBOXScreenInit(pScreen, argc, argv);
-}
-
-static Bool VBOXEnterVTIndex(int scrnIndex, int flags)
-{ RT_NOREF(flags); return VBOXEnterVT(xf86Screens[scrnIndex]); }
-
-static void VBOXLeaveVTIndex(int scrnIndex, int flags)
-{ RT_NOREF(flags); VBOXLeaveVT(xf86Screens[scrnIndex]); }
-
-static Bool VBOXCloseScreenIndex(int scrnIndex, ScreenPtr pScreen)
-{ RT_NOREF(scrnIndex); return VBOXCloseScreen(pScreen); }
-
-static Bool VBOXSwitchModeIndex(int scrnIndex, DisplayModePtr pMode, int flags)
-{ RT_NOREF(flags); return VBOXSwitchMode(xf86Screens[scrnIndex], pMode); }
-
-static void VBOXAdjustFrameIndex(int scrnIndex, int x, int y, int flags)
-{ RT_NOREF(flags); VBOXAdjustFrame(xf86Screens[scrnIndex], x, y); }
-
-static void VBOXFreeScreenIndex(int scrnIndex, int flags)
-{ RT_NOREF(flags); VBOXFreeScreen(xf86Screens[scrnIndex]); }
-# else
 # define SCRNINDEXAPI(pfn) pfn
-#endif /* XF86_SCRN_INTERFACE */
 
 static void setScreenFunctions(ScrnInfoPtr pScrn, xf86ProbeProc pfnProbe)
 {
@@ -1018,7 +924,7 @@ static void setSizesRandR11(ScrnInfoPtr pScrn)
     pNewMode->HDisplay = RT_CLAMP(pVBox->pScreens[0].aPreferredSize.cx, VBOX_VIDEO_MIN_SIZE, VBOX_VIDEO_MAX_VIRTUAL);
     pNewMode->VDisplay = RT_CLAMP(pVBox->pScreens[0].aPreferredSize.cy, VBOX_VIDEO_MIN_SIZE, VBOX_VIDEO_MAX_VIRTUAL);
     propertyValue = (pNewMode->HDisplay << 16) + pNewMode->VDisplay;
-    ChangeWindowProperty(ROOT_WINDOW(pScrn), MakeAtom(PREFERRED_MODE_ATOM_NAME,
+    dixChangeWindowProperty(serverClient, ROOT_WINDOW(pScrn), MakeAtom(PREFERRED_MODE_ATOM_NAME,
                          sizeof(PREFERRED_MODE_ATOM_NAME) - 1, TRUE), XA_INTEGER, 32,
                          PropModeReplace, 1, &propertyValue, TRUE);
 }
@@ -1029,13 +935,8 @@ static void reprobeCursor(ScrnInfoPtr pScrn)
 {
     if (ROOT_WINDOW(pScrn) == NULL)
         return;
-#ifdef XF86_SCRN_INTERFACE
     pScrn->EnableDisableFBAccess(pScrn, FALSE);
     pScrn->EnableDisableFBAccess(pScrn, TRUE);
-#else
-    pScrn->EnableDisableFBAccess(pScrn->scrnIndex, FALSE);
-    pScrn->EnableDisableFBAccess(pScrn->scrnIndex, TRUE);
-#endif
 }
 
 static void setSizesAndCursorIntegration(ScrnInfoPtr pScrn, Bool fScreenInitTime)
@@ -1043,11 +944,7 @@ static void setSizesAndCursorIntegration(ScrnInfoPtr pScrn, Bool fScreenInitTime
     RT_NOREF(fScreenInitTime);
     TRACE_LOG("fScreenInitTime=%d\n", (int)fScreenInitTime);
 #ifdef VBOXVIDEO_13
-# if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) >= 5
     RRGetInfo(xf86ScrnToScreen(pScrn), TRUE);
-# else
-    RRGetInfo(xf86ScrnToScreen(pScrn));
-# endif
 #else
     setSizesRandR11(pScrn);
 #endif
@@ -1319,7 +1216,7 @@ static void VBOXLeaveVT(ScrnInfoPtr pScrn)
     for (i = 0; i < pVBox->cScreens; ++i)
         vbox_crtc_dpms(pVBox->pScreens[i].paCrtcs, DPMSModeOff);
 #else
-    ChangeWindowProperty(ROOT_WINDOW(pScrn), MakeAtom(NO_VT_ATOM_NAME, sizeof(NO_VT_ATOM_NAME) - 1, FALSE), XA_INTEGER, 32,
+    dixChangeWindowProperty(serverClient, ROOT_WINDOW(pScrn), MakeAtom(NO_VT_ATOM_NAME, sizeof(NO_VT_ATOM_NAME) - 1, FALSE), XA_INTEGER, 32,
                          PropModeReplace, 1, &propertyValue, TRUE);
 #endif
     updateGraphicsCapability(pScrn, FALSE);
@@ -1358,11 +1255,7 @@ static Bool VBOXCloseScreen(ScreenPtr pScreen)
 #if defined(VBOXVIDEO_13) && defined(RT_OS_LINUX)
     vbvxCleanUpLinuxACPI(pScreen);
 #endif
-#ifndef XF86_SCRN_INTERFACE
-    ret = pScreen->CloseScreen(pScreen->myNum, pScreen);
-#else
     ret = pScreen->CloseScreen(pScreen);
-#endif
     return ret;
 }
 

@@ -39,13 +39,12 @@
  *          Michael Thayer <michael.thayer@oracle.com>
  */
 
-#ifdef XORG_7X
 /* We include <unistd.h> for Solaris below, and the ANSI C emulation layer
  * interferes with that. */
 # define _XF86_ANSIC_H
 # define XF86_LIBC_H
 # include <string.h>
-#endif
+
 #include "vboxvideo.h"
 #include "xf86.h"
 

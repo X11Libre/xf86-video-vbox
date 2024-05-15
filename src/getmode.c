@@ -25,16 +25,14 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "vboxvideo.h"
 
 #define NEED_XF86_TYPES
 #include "xf86.h"
-
-#ifdef XORG_7X
-# include <stdio.h>
-# include <stdlib.h>
-# include <string.h>
-#endif
 
 #ifdef VBOXVIDEO_13
 # ifdef RT_OS_LINUX

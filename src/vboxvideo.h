@@ -98,21 +98,7 @@ do { \
 
 /** Helper to work round different ways of getting the root window in different
  * server versions. */
-#if defined(XORG_VERSION_CURRENT) && XORG_VERSION_CURRENT < 70000000 \
-    && XORG_VERSION_CURRENT >= 10900000
 # define ROOT_WINDOW(pScrn) screenInfo.screens[(pScrn)->scrnIndex]->root
-#else
-# define ROOT_WINDOW(pScrn) WindowTable[(pScrn)->scrnIndex]
-#endif
-
-/** ChangeWindowProperty for X.Org Server 1.19 and later */
-#if defined(XORG_VERSION_CURRENT) && XORG_VERSION_CURRENT < 70000000 \
-    && XORG_VERSION_CURRENT >= 11900000
-# define ChangeWindowProperty(pWin, property, type, format, mode, \
-                              len, value, sendevent) \
-        dixChangeWindowProperty(serverClient, pWin, property, type, format, \
-                                mode, len, value, sendevent)
-#endif
 
 /** Structure containing all virtual monitor-specific information. */
 struct VBoxScreen
