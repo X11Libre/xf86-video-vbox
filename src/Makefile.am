@@ -28,7 +28,6 @@
 # TODO: -nostdlib/-Bstatic/-lgcc platform magic, not installing the .a, etc.
 
 AM_CFLAGS = $(BASE_CFLAGS) $(XORG_CFLAGS) $(PCIACCESS_CFLAGS) \
-        -DVBOXVIDEO_13 \
         -include xorg-server.h
 
 vboxvideo_drv_la_LTLIBRARIES = vboxvideo_drv.la

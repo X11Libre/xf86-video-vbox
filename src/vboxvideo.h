@@ -108,12 +108,10 @@ struct VBoxScreen
     RTRECT2 aScreenLocation;
     /** Is this CRTC enabled or in DPMS off state? */
     Bool fPowerOn;
-#ifdef VBOXVIDEO_13
     /** The virtual crtcs. */
     struct _xf86Crtc *paCrtcs;
     /** The virtual outputs, logically not distinct from crtcs. */
     struct _xf86Output *paOutputs;
-#endif
     /** Offsets of VBVA buffers in video RAM */
     uint32_t aoffVBVABuffer;
     /** Context information about the VBVA buffers for each screen */
@@ -160,14 +158,12 @@ typedef struct VBOXRec
     Bool fHostHasScreenBlankingFlag;
     /** Array of structures for receiving mode hints. */
     VBVAMODEHINT *paVBVAModeHints;
-#ifdef VBOXVIDEO_13
 # ifdef RT_OS_LINUX
     /** Input device file descriptor for getting ACPI hot-plug events. */
     int fdACPIDevices;
     /** Input handler handle for ACPI hot-plug listener. */
     void *hACPIEventHandler;
 # endif
-#endif
     /** HGSMI guest heap context */
     HGSMIGUESTCOMMANDCONTEXT guestCtx;
     /** Unrestricted horizontal resolution flag. */
@@ -217,9 +213,6 @@ extern void vbvxSetUpLinuxACPI(ScreenPtr pScreen);
 extern void vbvxCleanUpLinuxACPI(ScreenPtr pScreen);
 
 /* EDID generation */
-#ifdef VBOXVIDEO_13
 extern Bool VBOXEDIDSet(struct _xf86Output *output, DisplayModePtr pmode);
-#endif
 
 #endif /* _VBOXVIDEO_H_ */
-

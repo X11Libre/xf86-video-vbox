@@ -34,7 +34,6 @@
 #define NEED_XF86_TYPES
 #include "xf86.h"
 
-#ifdef VBOXVIDEO_13
 # ifdef RT_OS_LINUX
 #  include <linux/input.h>
 #  ifndef EVIOCGRAB
@@ -48,7 +47,6 @@
 #  include <fcntl.h>
 #  include <unistd.h>
 # endif /* RT_OS_LINUX */
-#endif /* VBOXVIDEO_13 */
 
 /**************************************************************************
 * Main functions                                                          *
@@ -234,7 +232,6 @@ void vbvxReadSizesAndCursorIntegrationFromHGSMI(ScrnInfoPtr pScrn, Bool *pfNeedU
 
 #undef COMPARE_AND_MAYBE_SET
 
-#ifdef VBOXVIDEO_13
 # ifdef RT_OS_LINUX
 /** We have this for two purposes: one is to ensure that the X server is woken
  * up when we get a video ACPI event.  Two is to grab ACPI video events to
@@ -313,4 +310,3 @@ void vbvxCleanUpLinuxACPI(ScreenPtr pScreen)
     pVBox->hACPIEventHandler = NULL;
 }
 # endif /* RT_OS_LINUX */
-#endif /* VBOXVIDEO_13 */
