@@ -32,11 +32,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifndef PCIACCESS
-# include "xf86Pci.h"
-# include <Pci.h>
-#endif
-
 #include "xf86.h"
 #define NEED_XF86_TYPES
 #include "compiler.h"

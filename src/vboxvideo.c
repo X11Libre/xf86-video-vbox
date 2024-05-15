@@ -79,12 +79,8 @@
 
 static const OptionInfoRec * VBOXAvailableOptions(int chipid, int busid);
 static void VBOXIdentify(int flags);
-#ifndef PCIACCESS
-static Bool VBOXProbe(DriverPtr drv, int flags);
-#else
 static Bool VBOXPciProbe(DriverPtr drv, int entity_num,
      struct pci_device *dev, intptr_t match_data);
-#endif
 static Bool VBOXPreInit(ScrnInfoPtr pScrn, int flags);
 static Bool VBOXScreenInit(ScreenPtr pScreen, int argc, char **argv);
 static Bool VBOXEnterVT(ScrnInfoPtr pScrn);
@@ -124,7 +120,6 @@ enum GenericTypes
     CHIP_VBOX_GENERIC
 };
 
-#ifdef PCIACCESS
 static const struct pci_id_match vbox_device_match[] = {
     {
         VBOX_VENDORID, VBOX_DEVICEID, PCI_MATCH_ANY, PCI_MATCH_ANY,
@@ -133,7 +128,6 @@ static const struct pci_id_match vbox_device_match[] = {
 
     { 0, 0, 0 },
 };
-#endif
 
 /* Supported chipsets */
 static SymTabRec VBOXChipsets[] =
@@ -160,19 +154,13 @@ DriverRec VBOXVIDEO = {
     VBOX_VERSION,
     VBOX_DRIVER_NAME,
     VBOXIdentify,
-#ifdef PCIACCESS
     NULL,
-#else
-    VBOXProbe,
-#endif
     VBOXAvailableOptions,
     NULL,
     0,
     NULL,
-#ifdef PCIACCESS
     vbox_device_match,
     VBOXPciProbe
-#endif
 };
 
 /* No options for now */
@@ -567,11 +555,7 @@ vboxSetup(pointer Module, pointer Options, int *ErrorMajor, int *ErrorMinor)
     if (!Initialised)
     {
         Initialised = TRUE;
-#ifdef PCIACCESS
         xf86AddDriver(&VBOXVIDEO, Module, HaveDriverFuncs);
-#else
-        xf86AddDriver(&VBOXVIDEO, Module, 0);
-#endif
         xf86Msg(X_CONFIG, "Load address of symbol \"VBOXVIDEO\" is %p\n",
                 (void *)&VBOXVIDEO);
         return (pointer)TRUE;
@@ -619,7 +603,6 @@ static void setScreenFunctions(ScrnInfoPtr pScrn, xf86ProbeProc pfnProbe)
  * generation to do a minimal probe for supported hardware.
  */
 
-#ifdef PCIACCESS
 static Bool
 VBOXPciProbe(DriverPtr drv, int entity_num, struct pci_device *dev,
              intptr_t match_data)
@@ -659,59 +642,6 @@ VBOXPciProbe(DriverPtr drv, int entity_num, struct pci_device *dev,
     TRACE_LOG("returning %s\n", pScrn == NULL ? "false" : "true");
     return (pScrn != NULL);
 }
-#endif
-
-#ifndef PCIACCESS
-static Bool
-VBOXProbe(DriverPtr drv, int flags)
-{
-    Bool foundScreen = FALSE;
-    int numDevSections;
-    GDevPtr *devSections;
-
-    /*
-     * Find the config file Device sections that match this
-     * driver, and return if there are none.
-     */
-    if ((numDevSections = xf86MatchDevice(VBOX_NAME,
-                      &devSections)) <= 0)
-    return (FALSE);
-
-    /* PCI BUS */
-    if (xf86GetPciVideoInfo())
-    {
-        int numUsed;
-        int *usedChips;
-        int i;
-        numUsed = xf86MatchPciInstances(VBOX_NAME, VBOX_VENDORID,
-                        VBOXChipsets, VBOXPCIchipsets,
-                        devSections, numDevSections,
-                        drv, &usedChips);
-        if (numUsed > 0)
-        {
-            if (flags & PROBE_DETECT)
-                foundScreen = TRUE;
-            else
-                for (i = 0; i < numUsed; i++)
-                {
-                    ScrnInfoPtr pScrn = NULL;
-                    /* Allocate a ScrnInfoRec  */
-                    if ((pScrn = xf86ConfigPciEntity(pScrn,0,usedChips[i],
-                                     VBOXPCIchipsets,NULL,
-                                     NULL,NULL,NULL,NULL)))
-                    {
-                        setScreenFunctions(pScrn, VBOXProbe);
-                        foundScreen = TRUE;
-                    }
-                }
-            free(usedChips);
-        }
-    }
-    free(devSections);
-    return (foundScreen);
-}
-#endif
-
 
 /*
  * QUOTE from the XFree86 DESIGN document:
@@ -775,16 +705,6 @@ VBOXPreInit(ScrnInfoPtr pScrn, int flags)
 
     /* Entity information seems to mean bus information. */
     pVBox->pEnt = xf86GetEntityInfo(pScrn->entityList[0]);
-
-#ifndef PCIACCESS
-    if (pVBox->pEnt->location.type != BUS_PCI)
-        return FALSE;
-
-    pVBox->pciInfo = xf86GetPciInfoForEntity(pVBox->pEnt->index);
-    pVBox->pciTag = pciTag(pVBox->pciInfo->bus,
-                           pVBox->pciInfo->device,
-                           pVBox->pciInfo->func);
-#endif
 
     /* Set up our ScrnInfoRec structure to describe our virtual
        capabilities to X. */
@@ -874,11 +794,7 @@ VBOXPreInit(ScrnInfoPtr pScrn, int flags)
     xf86SetDpi(pScrn, 96, 96);
 
     if (pScrn->memPhysBase == 0) {
-#ifdef PCIACCESS
         pScrn->memPhysBase = pVBox->pciInfo->regions[0].base_addr;
-#else
-        pScrn->memPhysBase = pVBox->pciInfo->memBase[0];
-#endif
         pScrn->fbOffset = 0;
     }
 
@@ -1294,18 +1210,11 @@ VBOXMapVidMem(ScrnInfoPtr pScrn)
     TRACE_ENTRY();
     if (!pVBox->base)
     {
-#ifdef PCIACCESS
         (void) pci_device_map_range(pVBox->pciInfo,
                                     pScrn->memPhysBase,
                                     pScrn->videoRam * 1024,
                                     PCI_DEV_MAP_FLAG_WRITABLE,
                                     & pVBox->base);
-#else
-        pVBox->base = xf86MapPciMem(pScrn->scrnIndex,
-                                    VIDMEM_FRAMEBUFFER,
-                                    pVBox->pciTag, pScrn->memPhysBase,
-                                    (unsigned) pScrn->videoRam * 1024);
-#endif
         if (!pVBox->base)
             rc = FALSE;
     }
@@ -1322,14 +1231,9 @@ VBOXUnmapVidMem(ScrnInfoPtr pScrn)
     if (pVBox->base == NULL)
         return;
 
-#ifdef PCIACCESS
     (void) pci_device_unmap_range(pVBox->pciInfo,
                                   pVBox->base,
                                   pScrn->videoRam * 1024);
-#else
-    xf86UnMapVidMem(pScrn->scrnIndex, pVBox->base,
-                    (unsigned) pScrn->videoRam * 1024);
-#endif
     pVBox->base = NULL;
     TRACE_EXIT();
 }

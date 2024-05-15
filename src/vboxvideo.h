@@ -131,12 +131,7 @@ struct VBoxScreen
 typedef struct VBOXRec
 {
     EntityInfoPtr pEnt;
-#ifdef PCIACCESS
     struct pci_device *pciInfo;
-#else
-    pciVideoPtr pciInfo;
-    PCITAG pciTag;
-#endif
     void *base;
     /** The amount of VRAM available for use as a framebuffer */
     unsigned long cbFBMax;
