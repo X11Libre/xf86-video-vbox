@@ -42,6 +42,13 @@
 #ifndef _VBOXVIDEO_H_
 #define _VBOXVIDEO_H_
 
+/* these *must* come before anything else that might include stdbool.h,
+   otherwise we're running into trouble with older X headers (up to 1.20)
+   using "bool" as field name */
+#include "xf86.h"
+#include "xf86str.h"
+#include "xf86Cursor.h"
+
 #include <VBoxVideoGuest.h>
 #include <VBoxVideo.h>
 #include "version-generated.h"
@@ -59,9 +66,6 @@
 #include "config.h"
 #endif
 
-#include "xf86.h"
-#include "xf86str.h"
-#include "xf86Cursor.h"
 
 #ifdef DEBUG
 
