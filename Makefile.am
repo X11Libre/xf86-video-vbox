@@ -20,6 +20,10 @@
 #  OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 #  USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+# During distcheck, system locations (as provided by pkg-config) may
+# not be writable; provide instead relative locations.
+DISTCHECK_CONFIGURE_FLAGS = --with-xorg-module-dir='$${libdir}/xorg/modules'
+
 SUBDIRS = src man
 MAINTAINERCLEANFILES = ChangeLog INSTALL
 .PHONY: ChangeLog INSTALL
