@@ -35,10 +35,7 @@
  *    Dave Airlie <airlied@redhat.com>
  *    Michael Thayer <michael.thayer@oracle.com>
  */
-
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #include "misc.h"
 #include "xf86DDC.h"
