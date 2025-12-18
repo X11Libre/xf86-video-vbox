@@ -76,16 +76,7 @@ AC_CHECK_DECL(xf86ConfigIsaEntity,
 	      [#include "xf86.h"])
 CFLAGS="$save_CFLAGS"
 
-save_CFLAGS="$CFLAGS"
-CFLAGS="$XORG_CFLAGS"
-AC_CHECK_DECL(XSERVER_LIBPCIACCESS,
-              [XSERVER_LIBPCIACCESS=yes], [XSERVER_LIBPCIACCESS=no],
-              [#include "xorg-server.h"])
-CFLAGS="$save_CFLAGS"
-
-if test "x$XSERVER_LIBPCIACCESS" = xyes; then
-    PKG_CHECK_MODULES([PCIACCESS], [pciaccess >= 0.12.901])
-fi
+PKG_CHECK_MODULES([PCIACCESS], [pciaccess >= 0.12.901])
 
 AC_CONFIG_FILES([
                 Makefile
