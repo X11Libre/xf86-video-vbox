@@ -489,8 +489,8 @@ static XF86ModuleVersionInfo vboxVersionRec =
 _X_EXPORT
 XF86ModuleData vboxvideoModuleData = { &vboxVersionRec, vboxSetup, NULL };
 
-static pointer
-vboxSetup(pointer Module, pointer Options, int *ErrorMajor, int *ErrorMinor)
+static void*
+vboxSetup(void *Module, void *Options, int *ErrorMajor, int *ErrorMinor)
 {
     static Bool Initialised = FALSE;
     RT_NOREF(Options, ErrorMinor);
@@ -501,7 +501,7 @@ vboxSetup(pointer Module, pointer Options, int *ErrorMajor, int *ErrorMinor)
         xf86AddDriver(&VBOXVIDEO, Module, HaveDriverFuncs);
         xf86Msg(X_CONFIG, "Load address of symbol \"VBOXVIDEO\" is %p\n",
                 (void *)&VBOXVIDEO);
-        return (pointer)TRUE;
+        return (void*)TRUE;
     }
 
     if (ErrorMajor)
@@ -779,22 +779,12 @@ static void setSizesAndCursorIntegration(ScrnInfoPtr pScrn, Bool fScreenInitTime
  * that the X server goes to sleep (to catch the property change request).
  * Although this is far more often than necessary it should not have real-life
  * performance consequences and allows us to simplify the code quite a bit. */
-static void vboxBlockHandler(pointer pData,
-#if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 23
-                             OSTimePtr pTimeout,
-                             pointer pReadmask
-#else
-                             void *pTimeout
-#endif
-                  )
+static void vboxBlockHandler(void *pData, void *pTimeout)
 {
     ScrnInfoPtr pScrn = (ScrnInfoPtr)pData;
     Bool fNeedUpdate = false;
 
     RT_NOREF(pTimeout);
-#if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 23
-    RT_NOREF(pReadmask);
-#endif
     if (pScrn->vtSema)
         vbvxReadSizesAndCursorIntegrationFromHGSMI(pScrn, &fNeedUpdate);
     if (fNeedUpdate)
@@ -951,7 +941,7 @@ static Bool VBOXScreenInit(ScreenPtr pScreen, int argc, char **argv)
 #endif
 
     /* Register block and wake-up handlers for getting new screen size hints. */
-    RegisterBlockAndWakeupHandlers(vboxBlockHandler, (WakeupHandlerProcPtr)NoopDDA, (pointer)pScrn);
+    RegisterBlockAndWakeupHandlers(vboxBlockHandler, (WakeupHandlerProcPtr)NoopDDA, pScrn);
 
     /* software cursor */
     miDCInitialize(pScreen, xf86GetPointerScreenFuncs());
