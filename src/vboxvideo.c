@@ -457,9 +457,7 @@ static const xf86OutputFuncsRec VBOXOutputFuncs = {
     .mode_set = vbox_output_mode_set,
     .detect = vbox_output_detect,
     .get_modes = vbox_output_get_modes,
-#ifdef RANDR_12_INTERFACE
      .set_property = NULL,
-#endif
     .destroy = vbox_output_stub
 };
 
