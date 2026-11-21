@@ -471,9 +471,9 @@ static XF86ModuleVersionInfo vboxVersionRec =
     MODINFOSTRING1,
     MODINFOSTRING2,
     XORG_VERSION_CURRENT,
-    1,                          /* Module major version. Xorg-specific */
-    0,                          /* Module minor version. Xorg-specific */
-    1,                          /* Module patchlevel. Xorg-specific */
+    VBOXVIDEO_VERSION_MAJOR,
+    VBOXVIDEO_VERSION_MINOR,
+    VBOXVIDEO_VERSION_PATCH,
     ABI_CLASS_VIDEODRV,         /* This is a video driver */
     ABI_VIDEODRV_VERSION,
     MOD_CLASS_VIDEODRV,
