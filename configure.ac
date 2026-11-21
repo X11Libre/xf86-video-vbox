@@ -39,6 +39,11 @@ m4_ifndef([XORG_MACROS_VERSION],
 XORG_MACROS_VERSION(1.8)
 XORG_DEFAULT_OPTIONS
 
+# XORG_RELEASE_VERSION drops a pre-release suffix such as "-rc1"; keep it.
+version_suffix=`echo "$PACKAGE_VERSION" | sed 's/^[[^-]]*//'`
+AC_DEFINE_UNQUOTED([PACKAGE_VERSION_SUFFIX], ["$version_suffix"],
+                   [Pre-release suffix of the version])
+
 # Disable some of the warnings xorg-macros.m4 sets by default that cause
 # too much noise here
 XORG_TESTSET_CFLAG([BASE_CFLAGS], [-Wno-declaration-after-statement])

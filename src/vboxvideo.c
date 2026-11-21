@@ -487,6 +487,10 @@ static XF86ModuleVersionInfo vboxVersionRec =
 _X_EXPORT
 XF86ModuleData vboxvideoModuleData = { &vboxVersionRec, vboxSetup, NULL };
 
+#ifdef XF86_MODULE_VERSION_SUFFIX
+XF86_MODULE_VERSION_SUFFIX(vboxvideo, VBOXVIDEO_VERSION_SUFFIX);
+#endif
+
 static void*
 vboxSetup(void *Module, void *Options, int *ErrorMajor, int *ErrorMinor)
 {
